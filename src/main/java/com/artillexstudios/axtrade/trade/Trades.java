@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.artillexstudios.axtrade.AxTrade.MESSAGEUTILS;
 
@@ -35,6 +36,12 @@ public class Trades {
 
     @Nullable
     public static Trade getTrade(Player player) {
-        return trades.stream().filter(trade -> trade.player1.getPlayer().equals(player) || trade.player2.getPlayer().equals(player)).findAny().orElse(null);
+        synchronized (trades) {
+            return trades.stream()
+              .filter(Objects::nonNull)
+              .filter(trade -> trade.player1.getPlayer().equals(player) || trade.player2.getPlayer().equals(player))
+              .findAny()
+              .orElse(null);
+        }
     }
 }

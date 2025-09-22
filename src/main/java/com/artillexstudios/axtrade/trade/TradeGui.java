@@ -32,10 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.artillexstudios.axtrade.AxTrade.CONFIG;
 import static com.artillexstudios.axtrade.AxTrade.GUIS;
@@ -43,7 +40,7 @@ import static com.artillexstudios.axtrade.AxTrade.LANG;
 import static com.artillexstudios.axtrade.AxTrade.MESSAGEUTILS;
 
 public class TradeGui extends GuiFrame {
-    private static final Cooldown<Player> confirmCooldown = Cooldown.create();
+    private static final Cooldown<UUID> confirmCooldown = Cooldown.createSynchronized();
     protected final Trade trade;
     private final TradePlayer player;
     protected final StorageGui gui;
@@ -79,16 +76,16 @@ public class TradeGui extends GuiFrame {
         if (player.hasConfirmed()) {
             super.createItem("own.confirm-item.slot", "own.confirm-item.cancel", event -> {
                 event.setCancelled(true);
-                if (confirmCooldown.hasCooldown(player.getPlayer())) return;
-                confirmCooldown.addCooldown(player.getPlayer(), 50L);
+                if (confirmCooldown.hasCooldown(player.getPlayer().getUniqueId())) return;
+                confirmCooldown.addCooldown(player.getPlayer().getUniqueId(), 50L);
                 player.cancel();
                 trade.update();
             }, Map.of(), player.getConfirmed());
         } else {
             super.createItem("own.confirm-item.slot", "own.confirm-item.accept", event -> {
                 event.setCancelled(true);
-                if (confirmCooldown.hasCooldown(player.getPlayer())) return;
-                confirmCooldown.addCooldown(player.getPlayer(), 50L);
+                if (confirmCooldown.hasCooldown(player.getPlayer().getUniqueId())) return;
+                confirmCooldown.addCooldown(player.getPlayer().getUniqueId(), 50L);
                 player.confirm();
             }, Map.of());
         }
@@ -157,7 +154,7 @@ public class TradeGui extends GuiFrame {
     }
 
     private void handleClickTop(InventoryClickEvent event) {
-        if (confirmCooldown.hasCooldown(player.getPlayer())) {
+        if (confirmCooldown.hasCooldown(player.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             return;
         }

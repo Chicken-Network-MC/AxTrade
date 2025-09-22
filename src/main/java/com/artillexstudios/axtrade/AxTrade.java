@@ -2,13 +2,11 @@ package com.artillexstudios.axtrade;
 
 import com.artillexstudios.axapi.AxPlugin;
 import com.artillexstudios.axapi.config.Config;
-import com.artillexstudios.axapi.executor.ThreadedQueue;
 import com.artillexstudios.axapi.libs.boostedyaml.dvs.versioning.BasicVersioning;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.dumper.DumperSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.general.GeneralSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.loader.LoaderSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettings;
-import com.artillexstudios.axapi.metrics.AxMetrics;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
@@ -20,7 +18,6 @@ import com.artillexstudios.axtrade.listeners.TradeListeners;
 import com.artillexstudios.axtrade.safety.SafetyManager;
 import com.artillexstudios.axtrade.trade.TradeTicker;
 import com.artillexstudios.axtrade.utils.NumberUtils;
-import com.artillexstudios.axtrade.utils.UpdateNotifier;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -35,13 +32,7 @@ public final class AxTrade extends AxPlugin {
     public static Config TOGGLED;
     public static MessageUtils MESSAGEUTILS;
     private static AxPlugin instance;
-    private static ThreadedQueue<Runnable> threadedQueue;
     public static BukkitAudiences BUKKITAUDIENCES;
-    private static AxMetrics metrics;
-
-    public static ThreadedQueue<Runnable> getThreadedQueue() {
-        return threadedQueue;
-    }
 
     public static AxPlugin getInstance() {
         return instance;
@@ -63,8 +54,6 @@ public final class AxTrade extends AxPlugin {
 
         MESSAGEUTILS = new MessageUtils(LANG.getBackingDocument(), "prefix", CONFIG.getBackingDocument());
 
-        threadedQueue = new ThreadedQueue<>("AxTrade-Datastore-thread");
-
         BUKKITAUDIENCES = BukkitAudiences.create(this);
 
         getServer().getPluginManager().registerEvents(new EntityInteractListener(), this);
@@ -79,15 +68,9 @@ public final class AxTrade extends AxPlugin {
         Commands.registerCommand();
 
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#00FFDD[AxTrade] Loaded plugin!"));
-
-        metrics = new AxMetrics(this, 8);
-        metrics.start();
-
-        if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier(this, 5943);
     }
 
     public void disable() {
-        if (metrics != null) metrics.cancel();
         SafetyManager.stop();
     }
 
