@@ -1,10 +1,10 @@
 package com.artillexstudios.axtrade.trade;
 
-import com.artillexstudios.axapi.gui.SignInput;
 import com.artillexstudios.axapi.nms.NMSHandlers;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.Cooldown;
 import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axtrade.AxTrade;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
 import com.artillexstudios.axtrade.safety.SafetyManager;
@@ -18,8 +18,9 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.StorageGui;
 import net.kyori.adventure.text.Component;
+import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.Tag;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
@@ -269,32 +270,46 @@ public class TradeGui extends GuiFrame {
         var lines = StringUtils.formatList(LANG.getStringList("currency-editor-sign"));
         lines.set(0, Component.empty());
 
-        var sign = new SignInput.Builder().setLines(lines).setHandler((player1, result) -> {
-            if (trade.isEnded()) return;
-            trade.prepTime = System.currentTimeMillis();
-            String am = result[0];
-            TradePlayer.Result addResult = player.setCurrency(currencyStr, am);
-            if (addResult == TradePlayer.Result.SUCCESS) {
-                MESSAGEUTILS.sendLang(player1, "currency-editor.success");
-            } else {
-                switch (addResult) {
-                    case NOT_ENOUGH_CURRENCY:
-                        MESSAGEUTILS.sendLang(player1, "currency-editor.not-enough");
-                        break;
-                    default:
-                        MESSAGEUTILS.sendLang(player1, "currency-editor.failed");
-                        break;
-                }
-            }
-            Scheduler.get().run(scheduledTask -> {
-                if (trade.isEnded()) return;
-                gui.open(player.getPlayer());
-                inSign = false;
-                trade.update();
-                updateTitle();
-            });
-        }).build(player.getPlayer());
-        sign.open();
+        new AnvilGUI.Builder()
+                .mainThreadExecutor(command -> Bukkit.getGlobalRegionScheduler().run(AxTrade.getInstance(), (task) -> command.run()))
+                .onClose(closeEvent -> {
+                    return;
+                })
+                .onClick((slot, stateSnapshot) -> {
+                    if(slot != AnvilGUI.Slot.OUTPUT) {
+                        return Collections.emptyList();
+                    }
+
+                    if (trade.isEnded()) return List.of(AnvilGUI.ResponseAction.close());
+
+                    trade.prepTime = System.currentTimeMillis();
+                    String am = stateSnapshot.getText();
+                    TradePlayer.Result addResult = player.setCurrency(currencyStr, am);
+                    if (addResult == TradePlayer.Result.SUCCESS) {
+                        MESSAGEUTILS.sendLang(player.getPlayer(), "currency-editor.success");
+                    } else {
+                        if (Objects.requireNonNull(addResult) == TradePlayer.Result.NOT_ENOUGH_CURRENCY) {
+                            MESSAGEUTILS.sendLang(player.getPlayer(), "currency-editor.not-enough");
+                        } else {
+                            MESSAGEUTILS.sendLang(player.getPlayer(), "currency-editor.failed");
+                        }
+                    }
+
+                    Scheduler.get().run(scheduledTask -> {
+                        if (trade.isEnded()) return;
+                        gui.open(player.getPlayer());
+                        inSign = false;
+                        trade.update();
+                        updateTitle();
+                    });
+
+                    return List.of(AnvilGUI.ResponseAction.close());
+                })
+                .preventClose()
+                .text("100")
+                .title("ᴘᴀʀᴀ ᴍɪᴋᴛᴀʀɪɴɪ ɢɪʀɪɴ")
+                .plugin(AxTrade.getInstance())
+                .open(player.getPlayer());
     }
 
     public void handleShulkerClick(InventoryClickEvent event) {

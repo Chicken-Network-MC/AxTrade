@@ -56,6 +56,10 @@
                                     <pattern>revxrsal.commands</pattern>
                                     <shadedPattern>com.artillexstudios.axtrade.libs.lamp</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>net.wesjd.anvilgui</pattern>
+                                    <shadedPattern>com.artillexstudios.axtrade.libs.anvilgui</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -84,6 +88,10 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -107,8 +115,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
             <version>1.21.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -118,6 +126,11 @@
             <version>1.4.749</version>
             <scope>compile</scope>
             <classifier>all</classifier>
+        </dependency>
+        <dependency>
+            <groupId>net.wesjd</groupId>
+            <artifactId>anvilgui</artifactId>
+            <version>1.10.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
