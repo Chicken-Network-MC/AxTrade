@@ -2,6 +2,20 @@
 
 prefix: "&#00ffdd&lAxTrade &7» "
 
+database:
+  # You can use h2 and mysql
+  type: mysql
+  threads: 5
+  min-idle: '1'
+  max-pool: '5'
+  idle-timeout: '30000'
+  mysql:
+    host: localhost
+    port: '3306'
+    database: pazar
+    user: user
+    password: pass
+
 # format: language_COUNTRY
 # after changing this, the server will download the default item names
 language: en_US

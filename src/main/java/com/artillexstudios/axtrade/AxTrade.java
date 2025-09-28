@@ -11,6 +11,7 @@ import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
 import com.artillexstudios.axtrade.commands.Commands;
+import com.artillexstudios.axtrade.database.HistoryDatabase;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.lang.LanguageManager;
 import com.artillexstudios.axtrade.listeners.EntityInteractListener;
@@ -18,6 +19,9 @@ import com.artillexstudios.axtrade.listeners.TradeListeners;
 import com.artillexstudios.axtrade.safety.SafetyManager;
 import com.artillexstudios.axtrade.trade.TradeTicker;
 import com.artillexstudios.axtrade.utils.NumberUtils;
+import com.chickennw.utils.ChickenUtils;
+import com.chickennw.utils.managers.CommandManager;
+import com.tcoded.folialib.FoliaLib;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -34,15 +38,21 @@ public final class AxTrade extends AxPlugin {
     private static AxPlugin instance;
     public static BukkitAudiences BUKKITAUDIENCES;
 
+    private static FoliaLib foliaLib;
+
+    public static FoliaLib getFoliaLib() {
+        return foliaLib;
+    }
+
     public static AxPlugin getInstance() {
         return instance;
     }
 
     public void enable() {
         instance = this;
-
-        int pluginId = 21500;
-        new Metrics(this, pluginId);
+        foliaLib = new FoliaLib(this);
+        ChickenUtils.setPlugin(this);
+        ChickenUtils.setFoliaLib(foliaLib);
 
         CONFIG = new Config(new File(getDataFolder(), "config.yml"), getResource("config.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setKeepAll(true).setVersioning(new BasicVersioning("version")).build());
         GUIS = new Config(new File(getDataFolder(), "guis.yml"), getResource("guis.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setKeepAll(true).setVersioning(new BasicVersioning("version")).build());
@@ -72,6 +82,7 @@ public final class AxTrade extends AxPlugin {
 
     public void disable() {
         SafetyManager.stop();
+        com.chickennw.utils.managers.HookManager.getInstance().unloadAllHooks();
     }
 
     public void updateFlags() {

@@ -5,7 +5,10 @@ import com.artillexstudios.axapi.utils.ContainerUtils;
 import com.artillexstudios.axtrade.api.events.AxTradeAbortEvent;
 import com.artillexstudios.axtrade.api.events.AxTradeCompleteEvent;
 import com.artillexstudios.axtrade.currency.CurrencyProcessor;
+import com.artillexstudios.axtrade.database.HistoryDatabase;
+import com.artillexstudios.axtrade.history.HistoryManager;
 import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
+import com.artillexstudios.axtrade.models.TradeHistory;
 import com.artillexstudios.axtrade.utils.HistoryUtils;
 import com.artillexstudios.axtrade.utils.NumberUtils;
 import com.artillexstudios.axtrade.utils.SoundUtils;
@@ -191,6 +194,8 @@ public class Trade {
                         MESSAGEUTILS.sendFormatted(player1.getPlayer(), LANG.getString("summary.get.item"), Map.of("%amount%", "" + itemAm, "%item%", itemName));
                     }
                 });
+
+                HistoryDatabase.getInstance().save(HistoryManager.createHistory(this));
 
                 HistoryUtils.writeToHistory(
                         String.format("%s: [Currencies: %s] [Items: %s] | %s: [Currencies: %s] [Items: %s]",

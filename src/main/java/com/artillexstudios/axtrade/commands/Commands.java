@@ -2,14 +2,18 @@ package com.artillexstudios.axtrade.commands;
 
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axtrade.AxTrade;
+import com.artillexstudios.axtrade.database.HistoryDatabase;
+import com.artillexstudios.axtrade.history.HistoryGui;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.lang.LanguageManager;
+import com.artillexstudios.axtrade.models.TradeHistory;
 import com.artillexstudios.axtrade.request.Requests;
 import com.artillexstudios.axtrade.trade.Trade;
 import com.artillexstudios.axtrade.trade.Trades;
 import com.artillexstudios.axtrade.utils.CommandMessages;
 import com.artillexstudios.axtrade.utils.NumberUtils;
 import com.artillexstudios.axtrade.utils.SoundUtils;
+import com.chickennw.utils.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,6 +26,8 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.orphan.OrphanCommand;
 import revxrsal.commands.orphan.Orphans;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,6 +40,8 @@ import static com.artillexstudios.axtrade.AxTrade.TOGGLED;
 
 @CommandPermission(value = "axtrade.trade")
 public class Commands implements OrphanCommand {
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     public void help(@NotNull CommandSender sender) {
         if (sender.hasPermission("axtrade.admin")) {
@@ -150,6 +158,42 @@ public class Commands implements OrphanCommand {
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#33FF33[AxTrade] Opening trade preview for " + sender.getName() + ", any errors under this should be ignored!"));
         new Trade(sender, sender);
         MESSAGEUTILS.sendLang(sender, "trade.preview-info");
+    }
+
+    @Subcommand("history")
+    @CommandPermission(value = "axtrade.admin")
+    public void history(@NotNull Player sender, String other, @Optional Integer id) {
+        if (id != null) {
+            HistoryDatabase.getInstance().getTradeLog(id).whenComplete((tradeLog, ex) -> {
+                if (ex != null) {
+                    sender.sendMessage(StringUtils.formatToString("&#33FF33[AxTrade] An error occurred while fetching the history"));
+                    ex.printStackTrace();
+                    return;
+                }
+
+                if (tradeLog == null) {
+                    sender.sendMessage(StringUtils.formatToString("&#33FF33[AxTrade] Not history found with this id"));
+                    return;
+                }
+
+                AxTrade.getFoliaLib().getScheduler().runAtEntity(sender, (_task) -> HistoryGui.open(sender, tradeLog));
+            });
+            return;
+        }
+
+        sender.sendMessage(StringUtils.formatToString("&#33FF33[AxTrade] Opening trade history for " + other));
+        HistoryDatabase.getInstance().getTradeLogs(other).whenComplete((tradeLogs, ex) -> {
+            if (ex != null) {
+                sender.sendMessage(StringUtils.formatToString("&#33FF33[AxTrade] An error occurred while fetching the history"));
+                ex.printStackTrace();
+                return;
+            }
+
+            for (TradeHistory log : tradeLogs) {
+                sender.sendMessage(ChatUtils.colorize("<yellow><click:run_command:'/trade history %s %s'>[%s] %s - %s | görüntülemek için tıkla.</click>"
+                        .formatted(other, log.getId(), DATE_FORMAT.format(new Date(log.getCreatedAt())), log.getPlayer1(), log.getPlayer2())));
+            }
+        });
     }
 
     private static BukkitCommandHandler handler = null;
