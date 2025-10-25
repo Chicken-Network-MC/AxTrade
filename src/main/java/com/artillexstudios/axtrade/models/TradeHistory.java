@@ -1,6 +1,7 @@
 package com.artillexstudios.axtrade.models;
 
 import com.chickennw.utils.utils.ItemStackBase64;
+import com.chickennw.utils.utils.ItemStackSerializer;
 import com.google.gson.reflect.TypeToken;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -46,12 +47,12 @@ public class TradeHistory {
 
     public List<ItemStack> getPlayer1ItemStacks() {
         List<String> list = GSON.fromJson(player1Items, TypeToken.get(List.class).getType());
-        return list.stream().map(ItemStackBase64::fromBase64).toList();
+        return list.stream().map(ItemStackSerializer::fromJson).toList();
     }
 
     public List<ItemStack> getPlayer2ItemStacks() {
         List<String> list = GSON.fromJson(player2Items, TypeToken.get(List.class).getType());
-        return list.stream().map(ItemStackBase64::fromBase64).toList();
+        return list.stream().map(ItemStackSerializer::fromJson).toList();
     }
 
 }

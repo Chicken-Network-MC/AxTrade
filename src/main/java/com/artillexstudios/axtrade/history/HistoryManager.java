@@ -4,6 +4,7 @@ import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
 import com.artillexstudios.axtrade.models.TradeHistory;
 import com.artillexstudios.axtrade.trade.Trade;
 import com.chickennw.utils.utils.ItemStackBase64;
+import com.chickennw.utils.utils.ItemStackSerializer;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -25,8 +26,8 @@ public class HistoryManager {
         for (Map.Entry<CurrencyHook, Double> entry : trade.getPlayer2().getCurrencies().entrySet())
             history.setPlayer2Money(entry.getValue());
 
-        List<String> player1Items = trade.getPlayer1().getTradeGui().getItems(false).stream().map(ItemStackBase64::toBase64).toList();
-        List<String> player2Items = trade.getPlayer2().getTradeGui().getItems(false).stream().map(ItemStackBase64::toBase64).toList();
+        List<String> player1Items = trade.getPlayer1().getTradeGui().getItems(false).stream().map(ItemStackSerializer::toJson).toList();
+        List<String> player2Items = trade.getPlayer2().getTradeGui().getItems(false).stream().map(ItemStackSerializer::toJson).toList();
 
         history.setPlayer1Items(GSON.toJson(player1Items));
         history.setPlayer2Items(GSON.toJson(player2Items));

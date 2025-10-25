@@ -67,9 +67,9 @@ public class TradeListeners implements Listener {
     @EventHandler
     public void onMove(@NotNull PlayerMoveEvent event) {
         if (event.getTo() == null) return;
+        if (!CONFIG.getBoolean("abort.move", true)) return;
         final Trade trade = Trades.getTrade(event.getPlayer());
         if (trade == null) return;
-        if (!CONFIG.getBoolean("abort.move", true)) return;
         if (System.currentTimeMillis() - trade.getPrepTime() < 1_000L) return;
         if (event.getFrom().distanceSquared(event.getTo()) == 0) return;
         trade.abort();
