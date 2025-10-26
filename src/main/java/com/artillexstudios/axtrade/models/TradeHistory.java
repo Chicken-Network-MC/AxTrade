@@ -47,12 +47,12 @@ public class TradeHistory {
 
     public List<ItemStack> getPlayer1ItemStacks() {
         List<String> list = GSON.fromJson(player1Items, TypeToken.get(List.class).getType());
-        return list.stream().map(ItemStackSerializer::fromJson).toList();
+        return list.stream().map(ItemStackBase64::fromBase64).toList();
     }
 
     public List<ItemStack> getPlayer2ItemStacks() {
         List<String> list = GSON.fromJson(player2Items, TypeToken.get(List.class).getType());
-        return list.stream().map(ItemStackSerializer::fromJson).toList();
+        return list.stream().map(ItemStackBase64::fromBase64).toList();
     }
 
 }

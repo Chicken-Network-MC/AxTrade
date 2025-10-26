@@ -26,8 +26,8 @@ public class HistoryManager {
         for (Map.Entry<CurrencyHook, Double> entry : trade.getPlayer2().getCurrencies().entrySet())
             history.setPlayer2Money(entry.getValue());
 
-        List<String> player1Items = trade.getPlayer1().getTradeGui().getItems(false).stream().map(ItemStackSerializer::toJson).toList();
-        List<String> player2Items = trade.getPlayer2().getTradeGui().getItems(false).stream().map(ItemStackSerializer::toJson).toList();
+        List<String> player1Items = trade.getPlayer1().getTradeGui().getItems(false).stream().map(ItemStackBase64::toBase64).toList();
+        List<String> player2Items = trade.getPlayer2().getTradeGui().getItems(false).stream().map(ItemStackBase64::toBase64).toList();
 
         history.setPlayer1Items(GSON.toJson(player1Items));
         history.setPlayer2Items(GSON.toJson(player2Items));
