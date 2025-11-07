@@ -67,10 +67,12 @@ public class TradeGui extends GuiFrame {
 
         if (trade.isEnded()) return;
 
-        update();
-        gui.open(player.getPlayer());
-        updateTitle();
-        opened = true;
+        AxTrade.getFoliaLib().getScheduler().runNextTick((task) -> {
+            update();
+            gui.open(player.getPlayer());
+            updateTitle();
+            opened = true;
+        });
     }
 
     public void update() {

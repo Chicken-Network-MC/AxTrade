@@ -77,9 +77,9 @@ public class TradeListeners implements Listener {
 
     @EventHandler
     public void onInteract(@NotNull PlayerInteractEvent event) {
+        if (!CONFIG.getBoolean("abort.interact", true)) return;
         final Trade trade = Trades.getTrade(event.getPlayer());
         if (trade == null) return;
-        if (!CONFIG.getBoolean("abort.interact", true)) return;
         if (System.currentTimeMillis() - trade.getPrepTime() < 1_000L) return;
         event.setCancelled(true);
         trade.abort();
@@ -87,9 +87,9 @@ public class TradeListeners implements Listener {
 
     @EventHandler
     public void onCommand(@NotNull PlayerCommandPreprocessEvent event) {
+        if (!CONFIG.getBoolean("abort.command", true)) return;
         final Trade trade = Trades.getTrade(event.getPlayer());
         if (trade == null) return;
-        if (!CONFIG.getBoolean("abort.command", true)) return;
         event.setCancelled(true);
         trade.abort();
     }
