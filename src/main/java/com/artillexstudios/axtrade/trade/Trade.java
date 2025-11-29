@@ -67,12 +67,18 @@ public class Trade {
         end();
         player1.getTradeGui().getItems(false).forEach(itemStack -> {
             if (itemStack == null) return;
-            player1.getPlayer().getInventory().addItem(itemStack);
+            Scheduler.get().runAt(player1.getPlayer().getLocation(), task -> {
+                ContainerUtils.INSTANCE.addOrDrop(player1.getPlayer().getInventory(), List.of(itemStack), player1.getPlayer().getLocation());
+            });
         });
-        player2.getTradeGui().getItems(false).forEach(itemStack -> {
-            if (itemStack == null) return;
-            player2.getPlayer().getInventory().addItem(itemStack);
-        });
+        if (player2.getTradeGui() != null) {
+            player2.getTradeGui().getItems(false).forEach(itemStack -> {
+                if (itemStack == null) return;
+                Scheduler.get().runAt(player2.getPlayer().getLocation(), task -> {
+                    ContainerUtils.INSTANCE.addOrDrop(player2.getPlayer().getInventory(), List.of(itemStack), player2.getPlayer().getLocation());
+                });
+            });
+        }
         HistoryUtils.writeToHistory(String.format("Aborted: %s - %s", player1.getPlayer().getName(), player2.getPlayer().getName()));
         MESSAGEUTILS.sendLang(player1.getPlayer(), "trade.aborted", Map.of("%player%", player2.getPlayer().getName()));
         MESSAGEUTILS.sendLang(player2.getPlayer(), "trade.aborted", Map.of("%player%", player1.getPlayer().getName()));

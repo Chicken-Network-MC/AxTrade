@@ -1,6 +1,6 @@
 # DOCUMENTATION: https://docs.artillex-studios.com/axtrade.html
 
-prefix: "&#00ffdd&lAxTrade &7» "
+prefix: "<gradient:#00FFDD:#55FFFF><b>AxTrade</b></gradient> &7» "
 
 database:
   # You can use h2 and mysql
@@ -47,6 +47,10 @@ prevent-adding-items-when-inventory-full: true
 
 # if enabled, players will not be able to trade if they have the same ip address
 disallow-same-ip-trade: false
+
+# if true, the accept item will not show the countdown with the item amount
+# this can be useful for textured guis
+static-accept-item-amount: false
 
 number-formatting:
   # modes:
@@ -107,4 +111,4 @@ update-notifier:
 enable-safety: true
 
 # do not change this
-version: 8
+version: 9
