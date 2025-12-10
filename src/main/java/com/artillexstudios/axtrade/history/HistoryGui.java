@@ -2,10 +2,10 @@ package com.artillexstudios.axtrade.history;
 
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axtrade.models.TradeHistory;
-import com.chickennw.utils.utils.ChatUtils;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,20 +34,40 @@ public class HistoryGui {
             4, 13, 22, 31, 40, 49
     };
 
-    public static void open(Player player, TradeHistory history) {
+    private static final int PREVIOUS_LOG_SLOT = 3;
+    private static final int NEXT_LOG_SLOT = 5;
+
+    public static void open(Player player, List<TradeHistory> histories, int index) {
         Gui gui = Gui.gui().rows(6).title(Component.text("Takas Geçmişi")).disableAllInteractions().create();
+        TradeHistory history = histories.get(index);
+
+        gui.setItem(PREVIOUS_LOG_SLOT, new GuiItem(ItemBuilder.create(Material.ARROW).setName("<yellow>Önceki Takas").get(), event -> {
+            if (index > 0) {
+                open(player, histories, index - 1);
+            } else {
+                player.sendMessage(Component.text("Bu ilk takas kaydı.", NamedTextColor.RED));
+            }
+        }));
+
+        gui.setItem(NEXT_LOG_SLOT, new GuiItem(ItemBuilder.create(Material.ARROW).setName("<yellow>Sonraki Takas").get(), event -> {
+            if (index < histories.size() - 1) {
+                open(player, histories, index + 1);
+            } else {
+                player.sendMessage(Component.text("Bu son takas kaydı.", NamedTextColor.RED));
+            }
+        }));
 
         gui.setItem(0, new GuiItem(ItemBuilder.create(Material.PLAYER_HEAD)
                 .setName("<yellow>%s eşyaları".formatted(history.getPlayer1())).get()));
 
-        gui.setItem(3, new GuiItem(ItemBuilder.create(Material.PAPER)
+        gui.setItem(1, new GuiItem(ItemBuilder.create(Material.PAPER)
                 .setName("<yellow>%s para".formatted(history.getPlayer1()))
                 .setLore(List.of("<gray>Miktar: <yellow>%s".formatted(history.getPlayer1Money()))).get()));
 
-        gui.setItem(5, new GuiItem(ItemBuilder.create(Material.PLAYER_HEAD)
+        gui.setItem(8, new GuiItem(ItemBuilder.create(Material.PLAYER_HEAD)
                 .setName("<yellow>%s eşyaları".formatted(history.getPlayer2())).get()));
 
-        gui.setItem(8, new GuiItem(ItemBuilder.create(Material.PAPER)
+        gui.setItem(7, new GuiItem(ItemBuilder.create(Material.PAPER)
                 .setName("<yellow>%s para".formatted(history.getPlayer2()))
                 .setLore(List.of("<gray>Miktar: <yellow>%s".formatted(history.getPlayer2Money()))).get()));
 
