@@ -10,8 +10,7 @@ import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettin
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
-import com.artillexstudios.axtrade.commands.Commands;
-import com.artillexstudios.axtrade.database.HistoryDatabase;
+import com.artillexstudios.axtrade.commands.CommandManager;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.lang.LanguageManager;
 import com.artillexstudios.axtrade.listeners.EntityInteractListener;
@@ -20,33 +19,28 @@ import com.artillexstudios.axtrade.safety.SafetyManager;
 import com.artillexstudios.axtrade.trade.TradeTicker;
 import com.artillexstudios.axtrade.utils.NumberUtils;
 import com.chickennw.utils.ChickenUtils;
-import com.chickennw.utils.managers.CommandManager;
 import com.tcoded.folialib.FoliaLib;
+import lombok.Getter;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 
 import java.io.File;
 
 public final class AxTrade extends AxPlugin {
+
     public static Config CONFIG;
     public static Config LANG;
     public static Config GUIS;
     public static Config HOOKS;
     public static Config TOGGLED;
     public static MessageUtils MESSAGEUTILS;
-    private static AxPlugin instance;
     public static BukkitAudiences BUKKITAUDIENCES;
 
+    @Getter
+    private static AxPlugin instance;
+
+    @Getter
     private static FoliaLib foliaLib;
-
-    public static FoliaLib getFoliaLib() {
-        return foliaLib;
-    }
-
-    public static AxPlugin getInstance() {
-        return instance;
-    }
 
     public void enable() {
         instance = this;
@@ -73,8 +67,7 @@ public final class AxTrade extends AxPlugin {
 
         TradeTicker.start();
         SafetyManager.start();
-
-        Commands.registerCommand();
+        CommandManager.load();
 
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#00FFDD[AxTrade] Loaded plugin!"));
     }
