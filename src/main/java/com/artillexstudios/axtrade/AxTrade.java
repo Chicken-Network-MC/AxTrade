@@ -16,6 +16,7 @@ import com.artillexstudios.axtrade.lang.LanguageManager;
 import com.artillexstudios.axtrade.listeners.EntityInteractListener;
 import com.artillexstudios.axtrade.listeners.TradeListeners;
 import com.artillexstudios.axtrade.safety.SafetyManager;
+import com.artillexstudios.axtrade.safety.SusTradeListener;
 import com.artillexstudios.axtrade.trade.TradeTicker;
 import com.artillexstudios.axtrade.utils.NumberUtils;
 import com.chickennw.utils.ChickenUtils;
@@ -61,6 +62,7 @@ public final class AxTrade extends AxPlugin {
 
         getServer().getPluginManager().registerEvents(new EntityInteractListener(), this);
         getServer().getPluginManager().registerEvents(new TradeListeners(), this);
+        getServer().getPluginManager().registerEvents(new SusTradeListener(), this);
 
         HookManager.setupHooks();
         NumberUtils.reload();

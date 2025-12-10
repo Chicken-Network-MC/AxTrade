@@ -2,6 +2,8 @@
 
 prefix: "<gradient:#00FFDD:#55FFFF><b>AxTrade</b></gradient> &7» "
 
+flagged-webhook-url: "" # webhook url to send flagged trade attempts to
+
 database:
   # You can use h2 and mysql
   type: mysql
