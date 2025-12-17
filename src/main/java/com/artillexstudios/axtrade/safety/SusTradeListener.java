@@ -23,13 +23,13 @@ public class SusTradeListener implements Listener {
         TradePlayer player2 = event.getTrade().getPlayer2();
         if ((getAddedMoney(player1) > 1_000_000 && hasAddedNoItemsOrMoney(player2))
                 || (getAddedMoney(player2) > 1_000_000 && hasAddedNoItemsOrMoney(player1))) {
-            flagTrade(event.getTrade(), FlagReason.MONEY);
+            flagTrade(event.getTrade(), FlagReason.MONEY, (long) Math.max(getAddedMoney(player1), getAddedMoney(player2)));
         } else if ((player1.getTradeGui().getItems(false).stream().anyMatch(i -> Tag.SHULKER_BOXES.isTagged(i.getType())) && hasAddedNoItemsOrMoney(player2))
                 || (player2.getTradeGui().getItems(false).stream().anyMatch(i -> Tag.SHULKER_BOXES.isTagged(i.getType())) && hasAddedNoItemsOrMoney(player1))) {
-            flagTrade(event.getTrade(), FlagReason.SHULKER_BOX);
+            flagTrade(event.getTrade(), FlagReason.SHULKER_BOX, -1);
         } else if ((getSpawnerCount(player1) >= 5 && hasAddedNoItemsOrMoney(player2))
                 || (getSpawnerCount(player2) >= 5 && hasAddedNoItemsOrMoney(player1))) {
-            flagTrade(event.getTrade(), FlagReason.SPAWNER);
+            flagTrade(event.getTrade(), FlagReason.SPAWNER, Math.max(getSpawnerCount(player1), getSpawnerCount(player2)));
         }
     }
 
@@ -50,16 +50,17 @@ public class SusTradeListener implements Listener {
                 .sum();
     }
 
-    private void flagTrade(Trade trade, FlagReason reason) {
+    private void flagTrade(Trade trade, FlagReason reason, long amount) {
         AxTrade.getInstance().getLogger().warning("Flagged trade between " + trade.getPlayer1().getPlayer().getName() + " and " + trade.getPlayer2().getPlayer().getName() + " for reason: " + reason.name());
         Message message = new Message().setContent("Şüpheli Takas Tespit Edildi!");
         Field player1Field = new Field("1. Oyuncu", "```%s```".formatted(trade.getPlayer1().getPlayer().getName()), true);
         Field player2Field = new Field("2. Oyuncu", "```%s```".formatted(trade.getPlayer2().getPlayer().getName()), true);
         String reasonText = switch (reason) {
-            case MONEY -> "```Karşılıksız şekilde yüksek miktarda para verme```";
+            case MONEY -> "```Karşılıksız şekilde yüksek miktarda para verme (%amount%)```";
             case SHULKER_BOX -> "```Karşılıksız şekilde shulker verme```";
-            case SPAWNER -> "```Karşılıksız şekilde çok sayıda spawner verme```";
+            case SPAWNER -> "```Karşılıksız şekilde çok sayıda spawner verme (%amount%)```";
         };
+        reasonText = reasonText.replace("%amount%", String.valueOf(amount));
         Field reasonField = new Field("Sebep", reasonText, false);
         Embed embed = new Embed()
                 .setTitle("Takas Detayları")
