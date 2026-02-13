@@ -29,6 +29,7 @@ softdepend:
   - EcoBits
   - RivalCredits
   - AxShulkers
+  - AxHoes
 libraries:
   - org.hibernate.orm:hibernate-hikaricp:6.6.13.Final
   - org.hibernate.orm:hibernate-core:6.6.13.Final

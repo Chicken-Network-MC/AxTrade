@@ -2,6 +2,7 @@ package com.artillexstudios.axtrade.hooks;
 
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axtrade.hooks.currency.AxHoesHook;
 import com.artillexstudios.axtrade.hooks.currency.AxQuestBoardHook;
 import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
 import com.artillexstudios.axtrade.hooks.currency.ExperienceHook;
@@ -62,6 +63,11 @@ public class HookManager {
         if (HOOKS.getBoolean("currencies.AxQuestBoard.register", true) && Bukkit.getPluginManager().getPlugin("AxQuestBoard") != null) {
             currency.add(new AxQuestBoardHook());
             Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#33FF33[AxTrade] Hooked into AxQuestBoard!"));
+        }
+
+        if (HOOKS.getBoolean("currencies.AxHoes.register", true) && Bukkit.getPluginManager().getPlugin("AxHoes") != null) {
+            currency.add(new AxHoesHook());
+            Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#33FF33[AxTrade] Hooked into AxHoes!"));
         }
 
         if (HOOKS.getBoolean("currencies.RedisEconomy.register", true) && Bukkit.getPluginManager().getPlugin("RedisEconomy") != null) {
